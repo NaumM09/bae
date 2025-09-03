@@ -114,7 +114,179 @@ const HeroSection = () => {
                   
                   <div className="message sent">
                     <div className="message-bubble sent-bubble">
-                      I see your profile says PTA/GQ, you stay
+                      I see your profile says PTA/GQ, you stay in GQ or you're from there?
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      yeah thats the one unfortunately😂 😢
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      I'm from GQ originally and live in PTA currently. I try visit home as often as possible. How about you?
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      😤 Yikes!
+                      <br/><br/>
+                      From Limpopo currently in Centurion (tempted to say PTA - but I heard that's reaching) 😤
+                      <br/><br/>
+                      That's pretty cool. You must pretty tight with your family.
+                      <br/><br/>
+                      You studying in PTA?
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      How long have you been this side for?
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      😭 😭 oh my! This area confuses me so much. For a while when I first moved up here, everything to me was just Joburg and Pretoria (still kinda is lol) 🤣 for months I thought that centurion was PTA eish
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      My family stays here in PTA as well😊 My grandma and my friends are all that side in GQ.
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      No I'm not. I'm currently looking for work at the moment. Are you studying and if so, what are you studying?
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      If you don't mind me asking, how old are you?
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      This side? 4 years, studied in Joburg 😅
+                      <br/><br/>
+                      WHICH IS VALID! Because I mean Midrand? Centurion? That's kinda like a grey area but not really because at least Centurion part of Tshwane.
+                      <br/><br/>
+                      Ohhh that makes sense. I hear it's beautiful that side hey 😍
+                      <br/><br/>
+                      Nah - studying. Job market is quite insane 😢 any aspirations of moving abroad?
+                      <br/><br/>
+                      27, how old are you?
+                    </div>
+                  </div>
+                  
+                  <div className="message voice-message">
+                    <div className="voice-bubble">
+                      <div className="voice-controls">
+                        <button className="play-button">▶</button>
+                        <div className="voice-waveform">
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                        </div>
+                        <span className="voice-duration">3:00</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="message received">
+                    <div className="message-bubble received-bubble">
+                      Sorry for the long vn but I'm lazy to type 😂 😂
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      3 minutes! I can add an instrumental and we can make a song ✍️ 🎤
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      Also apologising in advance before it even gets to 3 minutes 😂 yassss!!!!
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      Also up vs down here 😤 you go be there!
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      Small town vibes? That's pretty cool except when everyone is in your business 🙃
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      Was studying at Wits, rn I'm not studying anything, I design websites.
+                    </div>
+                  </div>
+                  
+                  <div className="message sent">
+                    <div className="message-bubble sent-bubble">
+                      Movie makeup is soooo cool! How did you get into that?
+                    </div>
+                  </div>
+                  
+                  <div className="message voice-message">
+                    <div className="voice-bubble">
+                      <div className="voice-controls">
+                        <button className="play-button">▶</button>
+                        <div className="voice-waveform">
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                        </div>
+                        <span className="voice-duration">2:57</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="message voice-message">
+                    <div className="voice-bubble">
+                      <div className="voice-controls">
+                        <button className="play-button">▶</button>
+                        <div className="voice-waveform">
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                          <div className="wave-bar"></div>
+                        </div>
+                        <span className="voice-duration">3:06</span>
+                      </div>
                     </div>
                   </div>
                 </div>
