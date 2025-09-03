@@ -1,0 +1,421 @@
+/* components/AnniversarySection.css */
+.anniversary-section {
+  padding: 6rem 2rem;
+  background: #0a0a0a;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.anniversary-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(34, 197, 94, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.anniversary-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.anniversary-title {
+  text-align: center;
+  font-size: clamp(3rem, 8vw, 6rem);
+  color: #ffffff;
+  margin-bottom: 6rem;
+  font-family: 'Arial Black', 'Helvetica', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+  line-height: 0.9;
+}
+
+.anniversary-title::after {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 4px;
+  background: #22c55e;
+  margin: 2rem auto 0;
+}
+
+.monthiversary-card {
+  background: rgba(15, 15, 15, 0.95);
+  border-radius: 0;
+  padding: 4rem 3rem;
+  margin-bottom: 6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  backdrop-filter: blur(20px);
+}
+
+.monthiversary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: #ec4899;
+}
+
+.message-display {
+  text-align: left;
+  position: relative;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-display.celebration {
+  border-left: 6px solid #ec4899;
+  padding-left: 2rem;
+}
+
+.message-display.reminder {
+  border-left: 6px solid #22c55e;
+  padding-left: 2rem;
+}
+
+.message-display.countdown {
+  border-left: 6px solid rgba(255, 255, 255, 0.3);
+  padding-left: 2rem;
+}
+
+.message-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  color: #ffffff;
+}
+
+.message-display.celebration .message-icon {
+  color: #ec4899;
+}
+
+.message-display.reminder .message-icon {
+  color: #22c55e;
+}
+
+.message-text {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 600;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.celebration-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: confetti-fall 3s linear infinite;
+}
+
+.confetti:nth-child(1) {
+  left: 10%;
+  animation-delay: 0s;
+  color: #ec4899;
+}
+
+.confetti:nth-child(2) {
+  left: 30%;
+  animation-delay: 0.5s;
+  color: #22c55e;
+}
+
+.confetti:nth-child(3) {
+  left: 70%;
+  animation-delay: 1s;
+  color: #ffffff;
+}
+
+.confetti:nth-child(4) {
+  left: 90%;
+  animation-delay: 1.5s;
+  color: #ec4899;
+}
+
+.milestones-timeline {
+  background: rgba(15, 15, 15, 0.95);
+  border-radius: 0;
+  padding: 5rem 4rem;
+  margin-bottom: 6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  position: relative;
+}
+
+.milestones-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: #22c55e;
+}
+
+.milestones-title {
+  text-align: left;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: #ffffff;
+  margin-bottom: 4rem;
+  font-family: 'Arial Black', 'Helvetica', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 0;
+}
+
+.timeline::before {
+  display: none;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 3rem;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.timeline-marker {
+  display: none;
+}
+
+.milestone-date {
+  font-size: 0.9rem;
+  color: #ffffff;
+  font-weight: 900;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Arial', sans-serif;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  justify-self: end;
+  padding-right: 1rem;
+  border-right: 3px solid #ec4899;
+  padding-bottom: 1rem;
+}
+
+.timeline-item:nth-child(even) .milestone-date {
+  border-right-color: #22c55e;
+}
+
+.timeline-content {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.timeline-content::before {
+  display: none;
+}
+
+.timeline-content:hover {
+  transform: translateX(10px);
+}
+
+.milestone-title {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  color: #ffffff;
+  margin-bottom: 1rem;
+  font-family: 'Arial Black', 'Helvetica', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.milestone-description {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  font-size: 1rem;
+  font-family: 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+.love-counter {
+  background: rgba(15, 15, 15, 0.95);
+  border-radius: 0;
+  padding: 5rem 4rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  position: relative;
+}
+
+.love-counter::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: #ec4899;
+}
+
+.love-counter h3 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #ffffff;
+  margin-bottom: 4rem;
+  font-family: 'Arial Black', 'Helvetica', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.counter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.counter-item {
+  background: transparent;
+  color: white;
+  padding: 2rem 1rem;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.counter-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #22c55e;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.counter-item:nth-child(2)::before {
+  background: #ec4899;
+}
+
+.counter-item:nth-child(3)::before {
+  background: #ffffff;
+}
+
+.counter-item:hover::before {
+  transform: scaleX(1);
+}
+
+.counter-item:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-5px);
+}
+
+.counter-number {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  font-family: 'Arial Black', 'Helvetica', sans-serif;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.counter-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Animations */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .anniversary-section {
+    padding: 4rem 1rem;
+  }
+  
+  .monthiversary-card, .milestones-timeline, .love-counter {
+    padding: 3rem 2rem;
+    margin-bottom: 4rem;
+  }
+  
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .milestone-date {
+    writing-mode: horizontal-tb;
+    text-orientation: unset;
+    justify-self: start;
+    border-right: none;
+    border-bottom: 3px solid #ec4899;
+    padding-right: 0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .timeline-item:nth-child(even) .milestone-date {
+    border-bottom-color: #22c55e;
+    border-right: none;
+  }
+  
+  .counter-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 300px;
+  }
+  
+  .message-display {
+    text-align: center;
+  }
+  
+  .milestones-title {
+    text-align: center;
+  }
+}
