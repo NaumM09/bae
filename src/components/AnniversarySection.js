@@ -7,9 +7,11 @@ const AnniversarySection = () => {
   const [isMonthiversary, setIsMonthiversary] = useState(false);
   const [isReminderDay, setIsReminderDay] = useState(false);
   const [daysUntilNext, setDaysUntilNext] = useState(0);
+  const [counter, setCounter] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   // Set your relationship start date here (year, month-1, day)
   const relationshipStart = new Date(2023, 1, 14); // February 14, 2023
+  const firstDmDate = new Date('2025-06-17T14:13:00');
 
   const monthiversaryMessages = [
     "Happy 1 month, my love! This is just the beginning of our beautiful story. 💕",
@@ -25,6 +27,18 @@ const AnniversarySection = () => {
     "11 months of pure magic with my favorite person. 💖",
     "Our first year together! Here's to forever, my darling. 🥂"
   ];
+
+  // Counter update function
+  const updateCounter = () => {
+    const now = new Date();
+    const diff = Math.max(0, now - firstDmDate);
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    setCounter({ hours, minutes, seconds });
+  };
 
   useEffect(() => {
     const checkDate = () => {
@@ -51,10 +65,18 @@ const AnniversarySection = () => {
       }
     };
 
+    // Initial updates
     checkDate();
-    const interval = setInterval(checkDate, 60000); // Check every minute
+    updateCounter();
+    
+    // Set up intervals
+    const dateInterval = setInterval(checkDate, 60000); // Check every minute
+    const counterInterval = setInterval(updateCounter, 1000); // Update counter every second
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(dateInterval);
+      clearInterval(counterInterval);
+    };
   }, []);
 
   const isLastDayOfMonth = (date) => {
@@ -82,8 +104,8 @@ const AnniversarySection = () => {
   };
 
   const milestones = [
-  {
-      title: "First DM ",
+    {
+      title: "First DM",
       date: "June 17, 2025",
       description: "Hey 😊 I think you're really cute and your profile caught my attention. Before I say more, just wondering, are you single?."
     },
@@ -143,48 +165,23 @@ const AnniversarySection = () => {
         </div>
 
         <div className="love-counter">
-          <h3>We've been in love for...</h3>
+          <h3>Since our first DM...</h3>
           <div className="counter-grid">
             <div className="counter-item">
-              <div className="counter-number" id="hours">0</div>
+              <div className="counter-number">{counter.hours.toLocaleString()}</div>
               <div className="counter-label">Hours</div>
             </div>
             <div className="counter-item">
-              <div className="counter-number" id="minutes">0</div>
+              <div className="counter-number">{counter.minutes}</div>
               <div className="counter-label">Minutes</div>
             </div>
             <div className="counter-item">
-              <div className="counter-number" id="seconds">0</div>
+              <div className="counter-number">{counter.seconds}</div>
               <div className="counter-label">Seconds</div>
             </div>
           </div>
         </div>
       </div>
-
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          function updateCounter() {
-            const startDate = new Date('2025-07-31T00:00:00');
-            const now = new Date();
-            const diff = Math.max(0, now - startDate);
-            
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            const hoursEl = document.getElementById('hours');
-            const minutesEl = document.getElementById('minutes');
-            const secondsEl = document.getElementById('seconds');
-            
-            if (hoursEl) hoursEl.textContent = hours;
-            if (minutesEl) minutesEl.textContent = minutes;
-            if (secondsEl) secondsEl.textContent = seconds;
-          }
-          
-          updateCounter();
-          setInterval(updateCounter, 1000);
-        `
-      }} />
     </section>
   );
 };
