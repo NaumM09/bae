@@ -1,6 +1,7 @@
 // App.js
 import React from 'react';
 import HeroSection from './components/HeroSection';
+import Hard75Section from './components/Hard75Section';
 import GallerySection from './components/GallerySection';
 import PlaylistsSection from './components/PlaylistsSection';
 import LettersSection from './components/LettersSection';
@@ -12,6 +13,7 @@ function App() {
   return (
     <div className="App">
       <HeroSection />
+      <Hard75Section />
       <GallerySection />
       <PlaylistsSection />
       <LettersSection />
