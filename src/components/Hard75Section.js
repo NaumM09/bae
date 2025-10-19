@@ -36,7 +36,8 @@ const Hard75Section = () => {
     { id: 'wakeup', label: 'Out of bed by 8 am', icon: '⏰' },
     { id: 'morning_prayer', label: 'Morning prayer', icon: '🙏' },
     { id: 'grateful', label: 'List 5 things I\'m grateful for', icon: '✨' },
-    { id: 'social_noon', label: 'Don\'t scroll on social media past 12pm', icon: '📱' },
+    { id: 'social_noon', label: 'Don\'t scroll on social media before 12pm', icon: '📱' },
+    { id: 'workout', label: '30 minutes workout', icon: '💪' },
     { id: 'water', label: 'Drink 4 glasses of water a day', icon: '💧' },
     { id: 'outside', label: 'Spend 10 minutes outside', icon: '🌞' },
     { id: 'bible', label: 'Read a chapter of the bible', icon: '📖' },
@@ -101,8 +102,13 @@ const Hard75Section = () => {
     return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   };
 
-  const person1Progress = calculateProgress(person1Tasks);
-  const person2Progress = calculateProgress(person2Tasks);
+  const currentTasks = currentUser === 'person1' ? person1Tasks : person2Tasks;
+  const currentProgress = calculateProgress(currentTasks);
+  const currentName = currentUser === 'person1' ? 'Shay' : 'Hlatse';
+  const otherName = currentUser === 'person1' ? 'Hlatse' : 'Shay';
+  const otherUser = currentUser === 'person1' ? 'person2' : 'person1';
+  const otherTasks = currentUser === 'person1' ? person2Tasks : person1Tasks;
+  const otherProgress = calculateProgress(otherTasks);
 
   return (
     <section className="hard75-section">
@@ -116,6 +122,28 @@ const Hard75Section = () => {
           <h2 className="hard75-title">
             75 Day Hard Challenge
           </h2>
+          <p className="hard75-description">
+            Growing together in faith and discipline. Every day, we complete our tasks 
+            and support each other on this journey of spiritual growth and transformation.
+          </p>
+        </div>
+
+        {/* User Toggle - Moved to top */}
+        <div className="user-toggle">
+          <button 
+            className={`toggle-btn ${currentUser === 'person1' ? 'active' : ''}`}
+            onClick={() => setCurrentUser('person1')}
+          >
+            <span className="toggle-avatar">👩</span>
+            <span className="toggle-name">Shay</span>
+          </button>
+          <button 
+            className={`toggle-btn ${currentUser === 'person2' ? 'active' : ''}`}
+            onClick={() => setCurrentUser('person2')}
+          >
+            <span className="toggle-avatar">👩</span>
+            <span className="toggle-name">Hlatse</span>
+          </button>
         </div>
 
         {/* Calendar Grid */}
@@ -185,48 +213,31 @@ const Hard75Section = () => {
           </button>
         </div>
 
-        {/* User Toggle */}
-        <div className="user-toggle">
-          <button 
-            className={`toggle-btn ${currentUser === 'person1' ? 'active' : ''}`}
-            onClick={() => setCurrentUser('person1')}
-          >
-            Shay
-          </button>
-          <button 
-            className={`toggle-btn ${currentUser === 'person2' ? 'active' : ''}`}
-            onClick={() => setCurrentUser('person2')}
-          >
-            Hlatse
-          </button>
-        </div>
-
-        {/* Task Cards */}
-        <div className="task-cards-container">
-          {/* Person 1 Card */}
-          <div className="task-card">
+        {/* Single Task Card for Current User */}
+        <div className="single-card-container">
+          <div className="task-card main-card">
             <div className="card-header">
-              <div className="user-avatar">👩</div>
+              <div className="user-avatar">{currentUser === 'person1' ? '👩' : '👩'}</div>
               <div className="user-info">
-                <h3>My Progress</h3>
-                <p>Day {currentDay}</p>
+                <h3>{currentName}'s Tasks</h3>
+                <p>Day {currentDay} • {getDayDate(currentDay)}</p>
               </div>
               <div className="progress-circle">
-                <svg width="60" height="60">
-                  <circle cx="30" cy="30" r="25" fill="none" stroke="#e5e7eb" strokeWidth="4"/>
+                <svg width="70" height="70">
+                  <circle cx="35" cy="35" r="30" fill="none" stroke="#e5e7eb" strokeWidth="5"/>
                   <circle 
-                    cx="30" 
-                    cy="30" 
-                    r="25" 
+                    cx="35" 
+                    cy="35" 
+                    r="30" 
                     fill="none" 
-                    stroke="#ec4899" 
-                    strokeWidth="4"
-                    strokeDasharray={`${person1Progress * 1.57} 157`}
+                    stroke={currentUser === 'person1' ? '#ec4899' : '#8b5cf6'}
+                    strokeWidth="5"
+                    strokeDasharray={`${currentProgress * 1.88} 188`}
                     strokeLinecap="round"
-                    transform="rotate(-90 30 30)"
+                    transform="rotate(-90 35 35)"
                   />
-                  <text x="30" y="35" textAnchor="middle" fontSize="12" fontWeight="600" fill="#0f172a">
-                    {person1Progress}%
+                  <text x="35" y="40" textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+                    {currentProgress}%
                   </text>
                 </svg>
               </div>
@@ -236,58 +247,52 @@ const Hard75Section = () => {
               {taskCategories.map(task => (
                 <div 
                   key={task.id}
-                  className={`task-item ${person1Tasks[task.id] ? 'completed' : ''} ${currentUser === 'person1' ? 'clickable' : 'disabled'}`}
-                  onClick={() => currentUser === 'person1' && toggleTask(task.id)}
+                  className={`task-item ${currentTasks[task.id] ? 'completed' : ''} clickable`}
+                  onClick={() => toggleTask(task.id)}
                 >
                   <span className="task-icon">{task.icon}</span>
                   <span className="task-label">{task.label}</span>
-                  <span className="task-check">{person1Tasks[task.id] ? '✓' : '○'}</span>
+                  <span className="task-check">{currentTasks[task.id] ? '✓' : '○'}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Person 2 Card */}
-          <div className="task-card">
-            <div className="card-header">
-              <div className="user-avatar">👩</div>
-              <div className="user-info">
-                <h3>Her Progress</h3>
+          {/* Other Person's Progress Summary */}
+          <div className="other-person-summary">
+            <div className="summary-header">
+              <div className="summary-avatar">{otherUser === 'person1' ? '👩' : '👩'}</div>
+              <div className="summary-info">
+                <h4>{otherName}'s Progress</h4>
                 <p>Day {currentDay}</p>
               </div>
-              <div className="progress-circle">
-                <svg width="60" height="60">
-                  <circle cx="30" cy="30" r="25" fill="none" stroke="#e5e7eb" strokeWidth="4"/>
-                  <circle 
-                    cx="30" 
-                    cy="30" 
-                    r="25" 
-                    fill="none" 
-                    stroke="#8b5cf6" 
-                    strokeWidth="4"
-                    strokeDasharray={`${person2Progress * 1.57} 157`}
-                    strokeLinecap="round"
-                    transform="rotate(-90 30 30)"
-                  />
-                  <text x="30" y="35" textAnchor="middle" fontSize="12" fontWeight="600" fill="#0f172a">
-                    {person2Progress}%
-                  </text>
-                </svg>
-              </div>
             </div>
-            
-            <div className="tasks-list">
-              {taskCategories.map(task => (
+            <div className="summary-progress">
+              <div className="progress-bar-container">
                 <div 
-                  key={task.id}
-                  className={`task-item ${person2Tasks[task.id] ? 'completed' : ''} ${currentUser === 'person2' ? 'clickable' : 'disabled'}`}
-                  onClick={() => currentUser === 'person2' && toggleTask(task.id)}
-                >
-                  <span className="task-icon">{task.icon}</span>
-                  <span className="task-label">{task.label}</span>
-                  <span className="task-check">{person2Tasks[task.id] ? '✓' : '○'}</span>
+                  className="progress-bar-fill" 
+                  style={{
+                    width: `${otherProgress}%`,
+                    background: otherUser === 'person1' ? '#ec4899' : '#8b5cf6'
+                  }}
+                ></div>
+              </div>
+              <span className="progress-text">{otherProgress}% Complete</span>
+            </div>
+            <div className="summary-tasks-preview">
+              {taskCategories.slice(0, 4).map(task => (
+                <div key={task.id} className="mini-task">
+                  <span className="mini-icon">{task.icon}</span>
+                  <span className={`mini-status ${otherTasks[task.id] ? 'done' : ''}`}>
+                    {otherTasks[task.id] ? '✓' : '○'}
+                  </span>
                 </div>
               ))}
+              {taskCategories.length > 4 && (
+                <div className="mini-task more">
+                  <span className="mini-text">+{taskCategories.length - 4}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
