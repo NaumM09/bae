@@ -122,10 +122,6 @@ const Hard75Section = () => {
           <h2 className="hard75-title">
             75 Day Hard Challenge
           </h2>
-          <p className="hard75-description">
-            Growing together in faith and discipline. Every day, we complete our tasks 
-            and support each other on this journey of spiritual growth and transformation.
-          </p>
         </div>
 
         {/* User Toggle - Moved to top */}
