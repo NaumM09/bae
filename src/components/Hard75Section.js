@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Hard75Section.css';
 
-// Firebase imports - you'll need to install: npm install firebase
+// Firebase imports
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth, signInAnonymously } from 'firebase/auth';
@@ -27,24 +27,65 @@ const Hard75Section = () => {
   const [person1Tasks, setPerson1Tasks] = useState({});
   const [person2Tasks, setPerson2Tasks] = useState({});
   const [allDaysData, setAllDaysData] = useState({});
-  const [currentDay, setCurrentDay] = useState(1);
-
+  
   const startDate = new Date('2025-10-20');
+  
+  // Calculate current day based on today's date
+  const calculateCurrentDay = () => {
+    const today = new Date();
+    const start = new Date(startDate);
+    
+    today.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    
+    const diffTime = today - start;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const dayNumber = diffDays + 1;
+    
+    return Math.max(1, Math.min(75, dayNumber));
+  };
+  
+  const [currentDay, setCurrentDay] = useState(calculateCurrentDay());
+  const actualCurrentDay = calculateCurrentDay();
 
-  // Your custom task list
+  // Task categories with carry-over rules and requirements
   const taskCategories = [
-    { id: 'wakeup', label: 'Out of bed by 8 am', icon: '⏰' },
-    { id: 'morning_prayer', label: 'Morning prayer', icon: '🙏' },
-    { id: 'grateful', label: 'List 5 things I\'m grateful for', icon: '✨' },
-    { id: 'social_noon', label: 'Don\'t scroll on social media before 12pm', icon: '📱' },
-    { id: 'workout', label: '30 minutes workout', icon: '💪' },
-    { id: 'water', label: 'Drink 4 glasses of water a day', icon: '💧' },
-    { id: 'outside', label: 'Spend 10 minutes outside', icon: '🌞' },
-    { id: 'bible', label: 'Read a chapter of the bible', icon: '📖' },
-    { id: 'read', label: 'Read 5 pages minimum', icon: '📚' },
-    { id: 'night_prayer', label: 'I did my night prayer', icon: '🌙' },
-    { id: 'social_night', label: 'Don\'t scroll on social media past 10 pm', icon: '🌃' },
-    { id: 'fruit', label: 'I ate a fruit', icon: '🍎' }
+    { id: 'wakeup', label: 'Out of bed by 8 am', icon: '⏰', canCarryOver: false },
+    { id: 'morning_prayer', label: 'Morning prayer', icon: '🙏', canCarryOver: false },
+    { id: 'grateful', label: 'List 5 things I\'m grateful for', icon: '✨', canCarryOver: false },
+    { id: 'social_noon', label: 'Don\'t scroll on social media before 12pm', icon: '📱', canCarryOver: false },
+    { 
+      id: 'workout', 
+      label: '30 minutes workout', 
+      icon: '💪', 
+      canCarryOver: true, 
+      baseAmount: 30,
+      unit: 'minutes',
+      getLabel: (amount) => `${amount} minutes workout${amount > 30 ? ' (carrying over yesterday)' : ''}`
+    },
+    { id: 'water', label: 'Drink 4 glasses of water a day', icon: '💧', canCarryOver: false },
+    { 
+      id: 'outside', 
+      label: 'Spend 10 minutes outside', 
+      icon: '🌞', 
+      canCarryOver: true,
+      baseAmount: 10,
+      unit: 'minutes',
+      getLabel: (amount) => `Spend ${amount} minutes outside${amount > 10 ? ' (carrying over yesterday)' : ''}`
+    },
+    { id: 'bible', label: 'Read a chapter of the bible', icon: '📖', canCarryOver: false },
+    { 
+      id: 'read', 
+      label: 'Read 5 pages minimum', 
+      icon: '📚', 
+      canCarryOver: true,
+      baseAmount: 5,
+      unit: 'pages',
+      getLabel: (amount) => `Read ${amount} pages${amount > 5 ? ' (carrying over yesterday)' : ''}`
+    },
+    { id: 'night_prayer', label: 'I did my night prayer', icon: '🌙', canCarryOver: false },
+    { id: 'social_night', label: 'Don\'t scroll on social media past 10 pm', icon: '🌃', canCarryOver: false },
+    { id: 'fruit', label: 'I ate a fruit', icon: '🍎', canCarryOver: false }
   ];
 
   useEffect(() => {
@@ -52,21 +93,18 @@ const Hard75Section = () => {
       console.error("Auth error:", error);
     });
 
-    // Listen to ALL days data for calendar
     const allDaysRef = ref(database, 'hard75');
     onValue(allDaysRef, (snapshot) => {
       const data = snapshot.val();
       setAllDaysData(data || {});
     });
 
-    // Listen to current day person 1 tasks
     const person1Ref = ref(database, 'hard75/person1/day' + currentDay);
     onValue(person1Ref, (snapshot) => {
       const data = snapshot.val();
       setPerson1Tasks(data || {});
     });
 
-    // Listen to current day person 2 tasks
     const person2Ref = ref(database, 'hard75/person2/day' + currentDay);
     onValue(person2Ref, (snapshot) => {
       const data = snapshot.val();
@@ -74,14 +112,129 @@ const Hard75Section = () => {
     });
   }, [currentDay]);
 
-  const toggleTask = (taskId) => {
+  // Check if a day is fully completed (all 12 tasks done)
+  const isDayFullyCompleted = (dayNum, person) => {
+    const dayData = allDaysData?.[person]?.[`day${dayNum}`];
+    if (!dayData) return false;
+    const completed = Object.values(dayData).filter(Boolean).length;
+    return completed === taskCategories.length;
+  };
+
+  // Check if a day is locked (can't edit)
+  const isDayLocked = (dayNum) => {
+    // Can't edit past days that are fully completed
+    if (dayNum < actualCurrentDay) {
+      return isDayFullyCompleted(dayNum, currentUser);
+    }
+    // Can't edit future days
+    if (dayNum > actualCurrentDay) {
+      return true;
+    }
+    return false;
+  };
+
+  // Check if task was missed yesterday
+  const wasTaskMissedYesterday = (taskId) => {
+    if (currentDay <= 1) return false;
+    const yesterdayData = allDaysData?.[currentUser]?.[`day${currentDay - 1}`];
+    return yesterdayData && !yesterdayData[taskId];
+  };
+
+  // Check if task was missed two days ago
+  const wasTaskMissedTwoDaysAgo = (taskId) => {
+    if (currentDay <= 2) return false;
+    const twoDaysAgoData = allDaysData?.[currentUser]?.[`day${currentDay - 2}`];
+    return twoDaysAgoData && !twoDaysAgoData[taskId];
+  };
+
+  // Check if task is permanently failed (missed 2 days in a row for carry-over tasks)
+  const isTaskPermanentlyFailed = (taskId) => {
+    const task = taskCategories.find(t => t.id === taskId);
+    if (!task?.canCarryOver) return false;
+    
+    return wasTaskMissedYesterday(taskId) && wasTaskMissedTwoDaysAgo(taskId);
+  };
+
+  // Calculate how much is owed for a carry-over task
+  const calculateTaskAmount = (taskId) => {
+    const task = taskCategories.find(t => t.id === taskId);
+    if (!task?.canCarryOver) return task?.baseAmount || 0;
+
+    let totalAmount = task.baseAmount;
+    
+    // Check if yesterday was missed
+    if (wasTaskMissedYesterday(taskId) && !wasTaskMissedTwoDaysAgo(taskId)) {
+      totalAmount += task.baseAmount; // Double the requirement
+    }
+
+    return totalAmount;
+  };
+
+  // Get task display info (label, whether it's carrying over)
+  const getTaskDisplayInfo = (task) => {
+    const isPermanentlyFailed = isTaskPermanentlyFailed(task.id);
+    const isCarryingOver = task.canCarryOver && wasTaskMissedYesterday(task.id) && !wasTaskMissedTwoDaysAgo(task.id);
+    const taskAmount = calculateTaskAmount(task.id);
+
+    if (isPermanentlyFailed) {
+      return {
+        label: task.label + ' ❌ (Failed - missed 2 days)',
+        amount: 0,
+        isCarryingOver: false,
+        isPermanentlyFailed: true,
+        canToggle: false
+      };
+    }
+
+    if (task.canCarryOver && task.getLabel) {
+      return {
+        label: task.getLabel(taskAmount),
+        amount: taskAmount,
+        isCarryingOver: isCarryingOver,
+        isPermanentlyFailed: false,
+        canToggle: true
+      };
+    }
+
+    return {
+      label: task.label,
+      amount: taskAmount,
+      isCarryingOver: false,
+      isPermanentlyFailed: false,
+      canToggle: true
+    };
+  };
+
+  const toggleTask = async (taskId) => {
+    // Check if day is locked
+    if (isDayLocked(currentDay)) {
+      alert(currentDay < actualCurrentDay 
+        ? "This day is locked because it's fully completed!" 
+        : "You can't edit future days!");
+      return;
+    }
+
+    // Check if task is permanently failed
+    if (isTaskPermanentlyFailed(taskId)) {
+      alert("This task failed because it was missed 2 days in a row!");
+      return;
+    }
+
     const userPath = `hard75/${currentUser}/day${currentDay}`;
     const taskRef = ref(database, `${userPath}/${taskId}`);
     
     const currentTasks = currentUser === 'person1' ? person1Tasks : person2Tasks;
     const newValue = !currentTasks[taskId];
     
-    set(taskRef, newValue);
+    await set(taskRef, newValue);
+
+    // If completing a carry-over task, also mark the previous day as complete
+    const task = taskCategories.find(t => t.id === taskId);
+    if (newValue && task?.canCarryOver && wasTaskMissedYesterday(taskId)) {
+      const prevDayPath = `hard75/${currentUser}/day${currentDay - 1}`;
+      const prevTaskRef = ref(database, `${prevDayPath}/${taskId}`);
+      await set(prevTaskRef, true);
+    }
   };
 
   const calculateProgress = (tasks) => {
@@ -110,6 +263,8 @@ const Hard75Section = () => {
   const otherTasks = currentUser === 'person1' ? person2Tasks : person1Tasks;
   const otherProgress = calculateProgress(otherTasks);
 
+  const isCurrentDayLocked = isDayLocked(currentDay);
+
   return (
     <section className="hard75-section">
       <div className="hard75-container">
@@ -124,7 +279,7 @@ const Hard75Section = () => {
           </h2>
         </div>
 
-        {/* User Toggle - Moved to top */}
+        {/* User Toggle */}
         <div className="user-toggle">
           <button 
             className={`toggle-btn ${currentUser === 'person1' ? 'active' : ''}`}
@@ -199,6 +354,9 @@ const Hard75Section = () => {
             <span className="day-number">{currentDay}</span>
             <span className="day-total">of 75</span>
             <span className="day-date">{getDayDate(currentDay)}</span>
+            {isCurrentDayLocked && (
+              <span className="day-locked">🔒 {currentDay < actualCurrentDay ? 'Completed' : 'Future'}</span>
+            )}
           </div>
           <button 
             onClick={() => setCurrentDay(Math.min(75, currentDay + 1))}
@@ -240,18 +398,40 @@ const Hard75Section = () => {
             </div>
             
             <div className="tasks-list">
-              {taskCategories.map(task => (
-                <div 
-                  key={task.id}
-                  className={`task-item ${currentTasks[task.id] ? 'completed' : ''} clickable`}
-                  onClick={() => toggleTask(task.id)}
-                >
-                  <span className="task-icon">{task.icon}</span>
-                  <span className="task-label">{task.label}</span>
-                  <span className="task-check">{currentTasks[task.id] ? '✓' : '○'}</span>
-                </div>
-              ))}
+              {taskCategories.map(task => {
+                const displayInfo = getTaskDisplayInfo(task);
+                const isCompleted = currentTasks[task.id];
+                
+                return (
+                  <div 
+                    key={task.id}
+                    className={`task-item ${isCompleted ? 'completed' : ''} ${
+                      displayInfo.isPermanentlyFailed ? 'failed' : ''
+                    } ${displayInfo.isCarryingOver ? 'carrying-over' : ''} ${
+                      !isCurrentDayLocked && displayInfo.canToggle ? 'clickable' : 'locked'
+                    }`}
+                    onClick={() => !isCurrentDayLocked && displayInfo.canToggle && toggleTask(task.id)}
+                  >
+                    <span className="task-icon">{task.icon}</span>
+                    <span className="task-label">
+                      {displayInfo.label}
+                      {displayInfo.isCarryingOver && <span className="carry-badge">📥 Carry-over</span>}
+                    </span>
+                    <span className="task-check">
+                      {displayInfo.isPermanentlyFailed ? '❌' : isCompleted ? '✓' : '○'}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+
+            {isCurrentDayLocked && (
+              <div className="lock-message">
+                {currentDay < actualCurrentDay 
+                  ? '🔒 This day is locked because all tasks are completed!' 
+                  : '🔒 You can only edit today\'s tasks!'}
+              </div>
+            )}
           </div>
 
           {/* Other Person's Progress Summary */}
