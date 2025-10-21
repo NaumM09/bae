@@ -36,6 +36,14 @@
   text-transform: uppercase;
 }
 
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
 .hard75-title {
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 900;
@@ -265,6 +273,16 @@
   margin-top: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.day-locked {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
 }
 
 /* User Toggle - Updated */
@@ -534,7 +552,7 @@
   transform: translateX(4px);
 }
 
-.task-item.disabled {
+.task-item.locked {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -542,6 +560,18 @@
 .task-item.completed {
   background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1));
   border-color: #8b5cf6;
+}
+
+.task-item.failed {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  border-color: #ef4444;
+  opacity: 0.6;
+}
+
+.task-item.carrying-over {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+  border-color: #3b82f6;
+  border-style: dashed;
 }
 
 .task-icon {
@@ -563,6 +593,17 @@
   color: #1f2937;
 }
 
+.carry-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
 .task-check {
   font-size: 1.5rem;
   color: #8b5cf6;
@@ -571,6 +612,18 @@
 
 .task-item.completed .task-check {
   color: #10b981;
+}
+
+.lock-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  border: 2px solid #fca5a5;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #dc2626;
 }
 
 /* Motivation Box */
@@ -595,6 +648,23 @@
   color: #475569;
   font-style: italic;
   line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.motivation-encourage {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #8b5cf6;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+.motivation-celebrate {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #10b981;
+  margin-top: 1rem;
+  line-height: 1.5;
 }
 
 /* Responsive Design */
@@ -727,6 +797,11 @@
     font-size: 0.65rem;
   }
 
+  .day-locked {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+  }
+
   /* Single Card Layout */
   .single-card-container {
     grid-template-columns: 1fr;
@@ -791,8 +866,18 @@
     font-size: 0.875rem;
   }
 
+  .carry-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+
   .task-check {
     font-size: 1.25rem;
+  }
+
+  .lock-message {
+    font-size: 0.8rem;
+    padding: 0.875rem;
   }
 
   /* Motivation */
@@ -802,6 +887,14 @@
   }
 
   .motivation-text {
+    font-size: 1rem;
+  }
+
+  .motivation-encourage {
+    font-size: 0.9rem;
+  }
+
+  .motivation-celebrate {
     font-size: 1rem;
   }
 }

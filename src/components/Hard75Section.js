@@ -31,14 +31,24 @@ const Hard75Section = () => {
   const startDate = new Date('2025-10-20');
   
   // Calculate current day based on today's date
+  // Days lock at 11 AM the next day to give people time to complete tasks
   const calculateCurrentDay = () => {
-    const today = new Date();
+    const now = new Date();
     const start = new Date(startDate);
     
-    today.setHours(0, 0, 0, 0);
+    // If it's before 11 AM, we're still on "yesterday's" day
+    const currentHour = now.getHours();
+    const effectiveDate = new Date(now);
+    
+    if (currentHour < 11) {
+      // Before 11 AM, subtract one day so people can still complete yesterday
+      effectiveDate.setDate(effectiveDate.getDate() - 1);
+    }
+    
+    effectiveDate.setHours(0, 0, 0, 0);
     start.setHours(0, 0, 0, 0);
     
-    const diffTime = today - start;
+    const diffTime = effectiveDate - start;
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const dayNumber = diffDays + 1;
     
@@ -111,14 +121,6 @@ const Hard75Section = () => {
       setPerson2Tasks(data || {});
     });
   }, [currentDay]);
-
-  // Check if a day is fully completed (all 12 tasks done)
-  const isDayFullyCompleted = (dayNum, person) => {
-    const dayData = allDaysData?.[person]?.[`day${dayNum}`];
-    if (!dayData) return false;
-    const completed = Object.values(dayData).filter(Boolean).length;
-    return completed === taskCategories.length;
-  };
 
   // Check if a day is locked (can't edit)
   const isDayLocked = (dayNum) => {
@@ -362,7 +364,7 @@ const Hard75Section = () => {
           </button>
         </div>
 
-        {/* Single Task Card for Current User */}
+        {/* Single Card Container */}
         <div className="single-card-container">
           <div className="task-card main-card">
             <div className="card-header">
