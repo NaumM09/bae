@@ -186,20 +186,15 @@ const Hard75Section = () => {
       };
     }
 
+    let displayLabel = task.label;
     if (task.canCarryOver && task.getLabel) {
-      return {
-        label: task.getLabel(taskAmount),
-        amount: taskAmount,
-        isCarryingOver: isCarryingOver,
-        isPermanentlyFailed: false,
-        canToggle: true
-      };
+      displayLabel = task.getLabel(taskAmount);
     }
 
     return {
-      label: task.label,
+      label: displayLabel,
       amount: taskAmount,
-      isCarryingOver: false,
+      isCarryingOver: isCarryingOver,
       isPermanentlyFailed: false,
       canToggle: true
     };
@@ -209,7 +204,7 @@ const Hard75Section = () => {
     // Check if day is locked
     if (isDayLocked(currentDay)) {
       alert(currentDay < actualCurrentDay 
-        ? "This day is locked because it's fully completed!" 
+        ? "This day is locked - you can only edit today's tasks!" 
         : "You can't edit future days!");
       return;
     }
@@ -355,7 +350,7 @@ const Hard75Section = () => {
             <span className="day-total">of 75</span>
             <span className="day-date">{getDayDate(currentDay)}</span>
             {isCurrentDayLocked && (
-              <span className="day-locked">🔒 {currentDay < actualCurrentDay ? 'Completed' : 'Future'}</span>
+              <span className="day-locked">🔒 {currentDay < actualCurrentDay ? 'Past Day' : 'Future'}</span>
             )}
           </div>
           <button 
@@ -415,7 +410,7 @@ const Hard75Section = () => {
                     <span className="task-icon">{task.icon}</span>
                     <span className="task-label">
                       {displayInfo.label}
-                      {displayInfo.isCarryingOver && <span className="carry-badge">📥</span>}
+                      {displayInfo.isCarryingOver && <span className="carry-badge">📥 Carry-over</span>}
                     </span>
                     <span className="task-check">
                       {displayInfo.isPermanentlyFailed ? '❌' : isCompleted ? '✓' : '○'}
@@ -428,7 +423,7 @@ const Hard75Section = () => {
             {isCurrentDayLocked && (
               <div className="lock-message">
                 {currentDay < actualCurrentDay 
-                  ? '🔒 This day is locked because all tasks are completed!' 
+                  ? '🔒 This day is locked - you can only edit today\'s tasks!' 
                   : '🔒 You can only edit today\'s tasks!'}
               </div>
             )}
@@ -478,6 +473,21 @@ const Hard75Section = () => {
           <p className="motivation-text">
             "Discipline is choosing between what you want now and what you want most."
           </p>
+          {currentProgress < 100 && currentDay === actualCurrentDay && (
+            <p className="motivation-encourage">
+              💫 Keep going {currentName}! Every task completed is a step closer to your best self!
+            </p>
+          )}
+          {otherProgress < 100 && currentDay === actualCurrentDay && (
+            <p className="motivation-encourage">
+              💕 {otherName} needs your support today! Send them some encouragement! 
+            </p>
+          )}
+          {currentProgress === 100 && otherProgress === 100 && currentDay === actualCurrentDay && (
+            <p className="motivation-celebrate">
+              🎉 Amazing! You both crushed Day {currentDay}! Keep this momentum going! 🔥
+            </p>
+          )}
         </div>
       </div>
     </section>
