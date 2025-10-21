@@ -124,15 +124,25 @@ const Hard75Section = () => {
 
   // Check if a day is locked (can't edit)
   const isDayLocked = (dayNum) => {
-    // Can't edit any past days (regardless of completion)
-    if (dayNum < actualCurrentDay) {
-      return true;
+    // Before 11 AM: can edit yesterday (actualCurrentDay) or today (actualCurrentDay + 1)
+    // After 11 AM: can only edit today (actualCurrentDay)
+    
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    if (currentHour < 11) {
+      // Before 11 AM: can edit current day OR next day
+      if (dayNum === actualCurrentDay || dayNum === actualCurrentDay + 1) {
+        return false; // Not locked
+      }
+    } else {
+      // After 11 AM: can only edit current day
+      if (dayNum === actualCurrentDay) {
+        return false; // Not locked
+      }
     }
-    // Can't edit future days
-    if (dayNum > actualCurrentDay) {
-      return true;
-    }
-    return false;
+    
+    return true; // Everything else is locked
   };
 
   // Check if task was missed yesterday
