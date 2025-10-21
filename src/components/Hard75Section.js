@@ -122,9 +122,9 @@ const Hard75Section = () => {
 
   // Check if a day is locked (can't edit)
   const isDayLocked = (dayNum) => {
-    // Can't edit past days that are fully completed
+    // Can't edit any past days (regardless of completion)
     if (dayNum < actualCurrentDay) {
-      return isDayFullyCompleted(dayNum, currentUser);
+      return true;
     }
     // Can't edit future days
     if (dayNum > actualCurrentDay) {
@@ -415,7 +415,7 @@ const Hard75Section = () => {
                     <span className="task-icon">{task.icon}</span>
                     <span className="task-label">
                       {displayInfo.label}
-                      {displayInfo.isCarryingOver && <span className="carry-badge">📥 Carry-over</span>}
+                      {displayInfo.isCarryingOver && <span className="carry-badge">📥</span>}
                     </span>
                     <span className="task-check">
                       {displayInfo.isPermanentlyFailed ? '❌' : isCompleted ? '✓' : '○'}
