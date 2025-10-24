@@ -254,7 +254,6 @@ const Hard75Section = () => {
         {/* Header */}
         <div className="hard75-header">
           <h2>Our Hard 75 Challenge</h2>
-          <p className="subtitle">Building discipline together, one day at a time</p>
           
           {/* User Toggle */}
           <div className="user-toggle">
