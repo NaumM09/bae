@@ -245,8 +245,8 @@ const Hard75Section = () => {
   const currentProgress = calculateProgress(currentTasks);
   const otherProgress = calculateProgress(otherTasks);
   const isCurrentDayLocked = isDayLocked(currentDay);
-  const currentName = currentUser === 'person1' ? 'Shay' : 'Tshepo';
-  const otherName = currentUser === 'person1' ? 'Tshepo' : 'Shay';
+  const currentName = currentUser === 'person1' ? 'Shay' : 'Hlatse';
+  const otherName = currentUser === 'person1' ? 'Hlatse' : 'Shay';
 
   return (
     <section id="hard75" className="hard75-section">
@@ -268,7 +268,7 @@ const Hard75Section = () => {
               className={`toggle-btn ${currentUser === 'person2' ? 'active' : ''}`}
               onClick={() => setCurrentUser('person2')}
             >
-              👩 Tshepo
+              👩 Hlatse
             </button>
           </div>
         </div>
