@@ -159,11 +159,14 @@ const Hard75Section = () => {
     return twoDaysAgoData && !twoDaysAgoData[taskId];
   };
 
-  // Check if task is permanently failed (missed 2 days in a row for carry-over tasks)
-  const isTaskPermanentlyFailed = (taskId) => {
+  // FIXED: Check if carry-over should be cancelled (missed 2 days in a row)
+  // This doesn't permanently fail the task - it just stops carrying over the debt
+  // The task can still be completed normally going forward with its base amount
+  const shouldCancelCarryOver = (taskId) => {
     const task = taskCategories.find(t => t.id === taskId);
     if (!task?.canCarryOver) return false;
     
+    // If missed 2 days in a row, cancel the carry-over (reset to base amount)
     return wasTaskMissedYesterday(taskId) && wasTaskMissedTwoDaysAgo(taskId);
   };
 
@@ -174,8 +177,9 @@ const Hard75Section = () => {
 
     let totalAmount = task.baseAmount;
     
-    // Check if yesterday was missed
-    if (wasTaskMissedYesterday(taskId) && !wasTaskMissedTwoDaysAgo(taskId)) {
+    // FIXED: Only carry over if missed yesterday but NOT two days ago
+    // If missed both days, we cancel the carry-over and reset to base amount
+    if (wasTaskMissedYesterday(taskId) && !shouldCancelCarryOver(taskId)) {
       totalAmount += task.baseAmount; // Double the requirement
     }
 
@@ -184,127 +188,92 @@ const Hard75Section = () => {
 
   // Get task display info (label, whether it's carrying over)
   const getTaskDisplayInfo = (task) => {
-    const isPermanentlyFailed = isTaskPermanentlyFailed(task.id);
-    const isCarryingOver = task.canCarryOver && wasTaskMissedYesterday(task.id) && !wasTaskMissedTwoDaysAgo(task.id);
+    const carryOverCancelled = shouldCancelCarryOver(task.id);
+    const isCarryingOver = task.canCarryOver && wasTaskMissedYesterday(task.id) && !carryOverCancelled;
     const taskAmount = calculateTaskAmount(task.id);
 
-    if (isPermanentlyFailed) {
-      return {
-        label: task.label + ' ❌ (Failed - missed 2 days)',
-        amount: 0,
-        isCarryingOver: false,
-        isPermanentlyFailed: true,
-        canToggle: false
-      };
-    }
-
+    // FIXED: Task is never permanently failed, just show a warning if carry-over was cancelled
     let displayLabel = task.label;
     if (task.canCarryOver && task.getLabel) {
       displayLabel = task.getLabel(taskAmount);
+    }
+
+    // Add warning badge if carry-over was cancelled
+    if (carryOverCancelled && task.canCarryOver) {
+      displayLabel += ' ⚠️ (Carry-over cancelled - back to base)';
     }
 
     return {
       label: displayLabel,
       amount: taskAmount,
       isCarryingOver: isCarryingOver,
-      isPermanentlyFailed: false,
-      canToggle: true
+      carryOverCancelled: carryOverCancelled,
+      canToggle: true // FIXED: Always allow toggling, never permanently lock
     };
   };
 
-  const toggleTask = async (taskId) => {
-    // Check if day is locked
-    if (isDayLocked(currentDay)) {
-      alert(currentDay < actualCurrentDay 
-        ? "This day is locked - you can only edit today's tasks!" 
-        : "You can't edit future days!");
-      return;
-    }
-
-    // Check if task is permanently failed
-    if (isTaskPermanentlyFailed(taskId)) {
-      alert("This task failed because it was missed 2 days in a row!");
-      return;
-    }
-
-    const userPath = `hard75/${currentUser}/day${currentDay}`;
-    const taskRef = ref(database, `${userPath}/${taskId}`);
-    
+  const toggleTask = (taskId) => {
     const currentTasks = currentUser === 'person1' ? person1Tasks : person2Tasks;
     const newValue = !currentTasks[taskId];
-    
-    await set(taskRef, newValue);
-
-    // If completing a carry-over task, also mark the previous day as complete
-    const task = taskCategories.find(t => t.id === taskId);
-    if (newValue && task?.canCarryOver && wasTaskMissedYesterday(taskId)) {
-      const prevDayPath = `hard75/${currentUser}/day${currentDay - 1}`;
-      const prevTaskRef = ref(database, `${prevDayPath}/${taskId}`);
-      await set(prevTaskRef, true);
-    }
-  };
-
-  const calculateProgress = (tasks) => {
-    const completed = Object.values(tasks).filter(Boolean).length;
-    return Math.round((completed / taskCategories.length) * 100);
-  };
-
-  const isDayCompleted = (dayNum, person) => {
-    const dayData = allDaysData?.[person]?.[`day${dayNum}`];
-    if (!dayData) return false;
-    const completed = Object.values(dayData).filter(Boolean).length;
-    return completed === taskCategories.length;
+    const taskRef = ref(database, `hard75/${currentUser}/day${currentDay}/${taskId}`);
+    set(taskRef, newValue);
   };
 
   const getDayDate = (dayNum) => {
     const date = new Date(startDate);
     date.setDate(date.getDate() + (dayNum - 1));
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const isDayCompleted = (dayNum, person) => {
+    const dayData = allDaysData?.[person]?.[`day${dayNum}`];
+    if (!dayData) return false;
+    
+    // Count completed tasks
+    const completedTasks = taskCategories.filter(task => dayData[task.id]).length;
+    return completedTasks === taskCategories.length;
+  };
+
+  const calculateProgress = (tasks) => {
+    const completed = taskCategories.filter(task => tasks[task.id]).length;
+    return Math.round((completed / taskCategories.length) * 100);
   };
 
   const currentTasks = currentUser === 'person1' ? person1Tasks : person2Tasks;
-  const currentProgress = calculateProgress(currentTasks);
-  const currentName = currentUser === 'person1' ? 'Shay' : 'Hlatse';
-  const otherName = currentUser === 'person1' ? 'Hlatse' : 'Shay';
   const otherUser = currentUser === 'person1' ? 'person2' : 'person1';
   const otherTasks = currentUser === 'person1' ? person2Tasks : person1Tasks;
+  const currentProgress = calculateProgress(currentTasks);
   const otherProgress = calculateProgress(otherTasks);
-
   const isCurrentDayLocked = isDayLocked(currentDay);
+  const currentName = currentUser === 'person1' ? 'Shay' : 'Tshepo';
+  const otherName = currentUser === 'person1' ? 'Tshepo' : 'Shay';
 
   return (
-    <section className="hard75-section">
+    <section id="hard75" className="hard75-section">
       <div className="hard75-container">
         {/* Header */}
         <div className="hard75-header">
-          <div className="hard75-badge">
-            <span className="badge-dot"></span>
-            Our Challenge Together
+          <h2>Our Hard 75 Challenge</h2>
+          <p className="subtitle">Building discipline together, one day at a time</p>
+          
+          {/* User Toggle */}
+          <div className="user-toggle">
+            <button
+              className={`toggle-btn ${currentUser === 'person1' ? 'active' : ''}`}
+              onClick={() => setCurrentUser('person1')}
+            >
+              👩 Shay
+            </button>
+            <button
+              className={`toggle-btn ${currentUser === 'person2' ? 'active' : ''}`}
+              onClick={() => setCurrentUser('person2')}
+            >
+              👩 Tshepo
+            </button>
           </div>
-          <h2 className="hard75-title">
-            75 Day Hard Challenge
-          </h2>
         </div>
 
-        {/* User Toggle */}
-        <div className="user-toggle">
-          <button 
-            className={`toggle-btn ${currentUser === 'person1' ? 'active' : ''}`}
-            onClick={() => setCurrentUser('person1')}
-          >
-            <span className="toggle-avatar">👩</span>
-            <span className="toggle-name">Shay</span>
-          </button>
-          <button 
-            className={`toggle-btn ${currentUser === 'person2' ? 'active' : ''}`}
-            onClick={() => setCurrentUser('person2')}
-          >
-            <span className="toggle-avatar">👩</span>
-            <span className="toggle-name">Hlatse</span>
-          </button>
-        </div>
-
-        {/* Calendar Grid */}
+        {/* Calendar */}
         <div className="calendar-section">
           <div className="calendar-header">
             <h3>Challenge Calendar</h3>
@@ -413,7 +382,7 @@ const Hard75Section = () => {
                   <div 
                     key={task.id}
                     className={`task-item ${isCompleted ? 'completed' : ''} ${
-                      displayInfo.isPermanentlyFailed ? 'failed' : ''
+                      displayInfo.carryOverCancelled ? 'carry-cancelled' : ''
                     } ${displayInfo.isCarryingOver ? 'carrying-over' : ''} ${
                       !isCurrentDayLocked && displayInfo.canToggle ? 'clickable' : 'locked'
                     }`}
@@ -425,7 +394,7 @@ const Hard75Section = () => {
                       {displayInfo.isCarryingOver && <span className="carry-badge">📥 Carry-over</span>}
                     </span>
                     <span className="task-check">
-                      {displayInfo.isPermanentlyFailed ? '❌' : isCompleted ? '✓' : '○'}
+                      {isCompleted ? '✓' : '○'}
                     </span>
                   </div>
                 );
